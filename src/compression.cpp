@@ -125,14 +125,11 @@ static std::pair<std::vector<size_t>, size_t> buildFile(
 std::vector<std::pair<uint8_t, size_t>> run(const uint8_t bytes[], const size_t size) {
 
     struct Node {
-        Node(size_t value = 0):
-            value(value)
-        {
+        Node() {
             for(size_t i = 0; i < INTEGER_8_VALUES; i++)
                 this->childs[i] = NONE;
         }
 
-        size_t value;
         size_t childs[INTEGER_8_VALUES];
     };
 
@@ -141,7 +138,7 @@ std::vector<std::pair<uint8_t, size_t>> run(const uint8_t bytes[], const size_t 
 
     const auto createNode = std::function([&nodes]() {
         const auto nodeIndex = nodes.size();
-        nodes.push_back(nodeIndex);
+        nodes.push_back(Node());
         return nodeIndex;
     });
     
@@ -153,7 +150,7 @@ std::vector<std::pair<uint8_t, size_t>> run(const uint8_t bytes[], const size_t 
         size_t current = 0;
         while(nodes[current].childs[bytes[i]] != NONE) {
             if((i + 1) == size) {
-                output.push_back({bytes[i], nodes[current].value});
+                output.push_back({bytes[i], current});
                 return output;
             }
 
@@ -161,7 +158,7 @@ std::vector<std::pair<uint8_t, size_t>> run(const uint8_t bytes[], const size_t 
         }
         
         nodes[current].childs[bytes[i]] = createNode();
-        output.push_back({bytes[i], nodes[current].value});
+        output.push_back({bytes[i], current});
     }
 
     return output;
@@ -197,9 +194,8 @@ static std::vector<uint8_t> processCompressionStream(
     const std::vector<std::pair<uint8_t, size_t>> &compressionStream)
 {
     struct Node {
-        Node(const size_t value = 0, const size_t parent = NONE, const uint8_t evaluation = '\0'):
+        Node(const size_t parent = NONE, const uint8_t evaluation = '\0'):
             evaluation(evaluation),
-            value(value),
             parent(parent)
         {
             for(size_t i = 0; i < INTEGER_8_VALUES; i++)
@@ -207,7 +203,6 @@ static std::vector<uint8_t> processCompressionStream(
         }
 
         uint8_t evaluation;
-        size_t value;
         size_t parent;
         size_t childs[INTEGER_8_VALUES];
     };
@@ -217,7 +212,7 @@ static std::vector<uint8_t> processCompressionStream(
 
     const auto createNode = std::function([&nodes](const size_t parent, const uint8_t evaluation) {
         const auto nodeIndex = nodes.size();
-        nodes.push_back(Node(nodeIndex, parent, evaluation));
+        nodes.push_back(Node(parent, evaluation));
         return nodeIndex;
     });
 
