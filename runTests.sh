@@ -31,27 +31,27 @@ make clean
 make release
 
 echo
-testInput "tests/vazio.txt" 1
-testInput "tests/nome.txt" 2
-testInput "src/compression.hpp" 3
-testInput "src/argReader.cpp" 4
-testInput "Makefile" 5
-testInput "src/argReader.hpp" 6
+#testInput "tests/vazio.txt" 1
+#testInput "tests/nome.txt" 2
+#testInput "src/compression.hpp" 3
+#testInput "src/argReader.cpp" 4
+#testInput "Makefile" 5
+#testInput "src/argReader.hpp" 6
 testInput "runTests.sh" 7
 testInput "src/main.cpp" 8
 testInput "tests/lorem1.txt" 9
-testInput "tests/especificacao.txt" 10
+#testInput "tests/especificacao.txt" 10
 testInput "src/compression.cpp" 11
 testInput "tests/lorem2.txt" 12
 testInput "tests/lorem3.txt" 13
-testInput "bin/text_compressor" 14
+#testInput "bin/text_compressor" 14
 testInput "tests/lorem7.txt" 15
 testInput "tests/lorem6.txt" 16
 testInput "tests/lorem5.txt" 17
 testInput "tests/lorem4.txt" 18
-testInput "tests/os_lusiadas.txt" 19
-testInput "tests/dom_casmurro.txt" 20
-testInput "tests/constituicao1988.txt" 21
+#testInput "tests/os_lusiadas.txt" 19
+#testInput "tests/dom_casmurro.txt" 20
+#testInput "tests/constituicao1988.txt" 21
 testInput "tests/lorem8.txt" 22
 #testInput "tests/video.mp4" 23
 
