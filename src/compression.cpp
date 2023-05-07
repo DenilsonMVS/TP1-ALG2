@@ -3,86 +3,12 @@
 
 #include <functional>
 
+#include "bits.hpp"
+
 
 static constexpr auto INTEGER_8_VALUES = size_t(256);
 static constexpr auto NONE = size_t(-1);
-static constexpr auto BYTE_BITS_SIZE = size_t(8);
-static constexpr auto SIZE_T_BITS_SIZE = sizeof(size_t) * BYTE_BITS_SIZE;
 static constexpr auto INDEX_SIZE_SIZE_BITS = 7;
-
-
-class BitWriter {
-public:
-    BitWriter(const size_t expectedBitSize = 0):
-        offset(0),
-        wordToPush(0)
-    {
-        this->data.reserve(expectedBitSize / SIZE_T_BITS_SIZE + ((expectedBitSize % SIZE_T_BITS_SIZE ) > 0));
-    }
-    
-    void writeBits(size_t value, const size_t size) {
-        value = ((size_t(1) << size) - 1) & value;
-
-        if(this->offset + size <= SIZE_T_BITS_SIZE) {
-            this->wordToPush |= value << this->offset;
-            this->offset += size;
-        } else {
-            if(this->offset != 64)
-                this->wordToPush |= value << this->offset;
-
-            this->data.push_back(this->wordToPush);
-            
-            this->wordToPush = 0;
-            const auto remainingBits = this->offset + size - SIZE_T_BITS_SIZE;
-            this->wordToPush |= value >> (size - remainingBits);
-            this->offset = remainingBits;
-        }
-    }
-
-    std::vector<size_t> finish() {
-        if(offset > 0)
-            this->data.push_back(this->wordToPush);
-        this->offset = 0;
-        this->wordToPush = 0;
-        return std::move(this->data);
-    }
-
-private:
-    std::vector<size_t> data;
-    size_t offset;
-    size_t wordToPush;
-};
-
-class BitReader {
-public:
-    BitReader(const size_t data[]):
-        data(data),
-        offset(0),
-        index(0) {}
-
-    size_t readBits(const size_t size) {
-        if(this->offset + size <= SIZE_T_BITS_SIZE) {
-            const auto output = (this->data[this->index] >> this->offset) & ((size_t(1) << size) - 1);
-            this->offset += size;
-            return output;
-        } else {
-            size_t output = 0;
-            if(this->offset != 64)
-                output = (this->data[this->index] >> this->offset);
-            this->index++;
-            const auto remainingBits = this->offset + size - SIZE_T_BITS_SIZE;
-            output |= (this->data[this->index] & ((size_t(1) << remainingBits) - 1)) << (size - remainingBits);
-            this->offset = remainingBits;
-            return output;
-        }
-    }
-
-private:
-    const size_t *data;
-    size_t offset;
-    size_t index;
-};
-
 
 static size_t getMaxIndex(
     const std::vector<std::pair<uint8_t, size_t>> &compressionStream)
